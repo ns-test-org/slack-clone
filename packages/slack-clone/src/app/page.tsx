@@ -135,6 +135,34 @@ export default function SlackClone() {
         </div>
 
         <div className="flex-1 overflow-y-auto">
+          {/* Threads Section */}
+          <div className="p-4 border-b border-[#522653]">
+            <h2 className="text-sm font-semibold flex items-center gap-2 px-2 py-1 hover:bg-[#522653] rounded cursor-pointer">
+              <span>💬</span> Threads
+            </h2>
+          </div>
+
+          {/* Huddles Section */}
+          <div className="p-4 border-b border-[#522653]">
+            <h2 className="text-sm font-semibold flex items-center gap-2 px-2 py-1 hover:bg-[#522653] rounded cursor-pointer">
+              <span>🎧</span> Huddles
+            </h2>
+          </div>
+
+          {/* Drafts & Sent Section */}
+          <div className="p-4 border-b border-[#522653]">
+            <h2 className="text-sm font-semibold flex items-center gap-2 px-2 py-1 hover:bg-[#522653] rounded cursor-pointer">
+              <span>📝</span> Drafts & sent
+            </h2>
+          </div>
+
+          {/* Directories Section */}
+          <div className="p-4 border-b border-[#522653]">
+            <h2 className="text-sm font-semibold flex items-center gap-2 px-2 py-1 hover:bg-[#522653] rounded cursor-pointer">
+              <span>📁</span> Directories
+            </h2>
+          </div>
+
           {/* VIP Section */}
           <div className="p-4 border-b border-[#522653]">
             <div className="flex items-center justify-between mb-2">
@@ -328,6 +356,7 @@ export default function SlackClone() {
     </div>
   );
 }
+
 
 
 
