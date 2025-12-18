@@ -23,6 +23,13 @@ interface UserProfile {
   photoUrl?: string;
 }
 
+type ViewMode = 'single' | 'split2' | 'split4';
+
+interface PaneState {
+  channelId: string | null;
+  messageText: string;
+}
+
 export default function SlackClone() {
   const [channels, setChannels] = useState<Channel[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -40,6 +47,15 @@ export default function SlackClone() {
     timezone: '',
     photoUrl: '',
   });
+  
+  // Multi-window view state
+  const [viewMode, setViewMode] = useState<ViewMode>('single');
+  const [panes, setPanes] = useState<PaneState[]>([
+    { channelId: null, messageText: '' },
+    { channelId: null, messageText: '' },
+    { channelId: null, messageText: '' },
+    { channelId: null, messageText: '' },
+  ]);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -109,19 +125,41 @@ export default function SlackClone() {
     setShowChannelInput(false);
   };
 
-  const sendMessage = () => {
-    if (!messageText.trim() || !activeChannelId) return;
+  const sendMessage = (paneIndex?: number) => {
+    const text = paneIndex !== undefined ? panes[paneIndex].messageText : messageText;
+    const channelId = paneIndex !== undefined ? panes[paneIndex].channelId : activeChannelId;
+    
+    if (!text.trim() || !channelId) return;
 
     const newMessage: Message = {
       id: Date.now().toString(),
-      channelId: activeChannelId,
-      text: messageText.trim(),
+      channelId: channelId,
+      text: text.trim(),
       timestamp: Date.now(),
       author: userProfile?.displayName || 'You',
     };
 
     setMessages([...messages, newMessage]);
-    setMessageText('');
+    
+    if (paneIndex !== undefined) {
+      const newPanes = [...panes];
+      newPanes[paneIndex].messageText = '';
+      setPanes(newPanes);
+    } else {
+      setMessageText('');
+    }
+  };
+
+  const updatePaneChannel = (paneIndex: number, channelId: string) => {
+    const newPanes = [...panes];
+    newPanes[paneIndex].channelId = channelId;
+    setPanes(newPanes);
+  };
+
+  const updatePaneMessageText = (paneIndex: number, text: string) => {
+    const newPanes = [...panes];
+    newPanes[paneIndex].messageText = text;
+    setPanes(newPanes);
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -160,10 +198,90 @@ export default function SlackClone() {
   const activeChannel = channels.find(c => c.id === activeChannelId);
   const channelMessages = messages.filter(m => m.channelId === activeChannelId);
 
+  const renderChannelView = (channelId: string | null, paneIndex?: number) => {
+    const channel = channels.find(c => c.id === channelId);
+    const msgs = messages.filter(m => m.channelId === channelId);
+    const msgText = paneIndex !== undefined ? panes[paneIndex].messageText : messageText;
+
+    return (
+      <div className="flex-1 flex flex-col h-full">
+        {/* Header */}
+        <div className="h-14 border-b border-gray-700 flex items-center justify-between px-4 flex-shrink-0">
+          {paneIndex !== undefined ? (
+            <select
+              value={channelId || ''}
+              onChange={(e) => updatePaneChannel(paneIndex, e.target.value)}
+              className="bg-[#1a1d21] border border-gray-600 rounded px-3 py-1 text-sm outline-none focus:border-[#1164a3]"
+            >
+              <option value="">Select channel...</option>
+              {channels.map((ch) => (
+                <option key={ch.id} value={ch.id}>
+                  # {ch.name}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <h2 className="text-lg font-semibold">
+              {channel ? `# ${channel.name}` : 'Select a channel'}
+            </h2>
+          )}
+        </div>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {msgs.length === 0 ? (
+            <div className="text-gray-400 text-center mt-8 text-sm">
+              {channelId ? 'No messages yet. Start the conversation!' : 'Select a channel to view messages'}
+            </div>
+          ) : (
+            msgs.map((message) => (
+              <div key={message.id} className="flex gap-3">
+                <div className="w-9 h-9 rounded bg-[#3f0e40] flex items-center justify-center font-semibold flex-shrink-0">
+                  {message.author[0]}
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-semibold text-sm">{message.author}</span>
+                    <span className="text-xs text-gray-400">
+                      {new Date(message.timestamp).toLocaleTimeString()}
+                    </span>
+                  </div>
+                  <div className="text-sm mt-1 break-words">{message.text}</div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Message Input */}
+        {channelId && (
+          <div className="p-4 border-t border-gray-700 flex-shrink-0">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={msgText}
+                onChange={(e) => paneIndex !== undefined ? updatePaneMessageText(paneIndex, e.target.value) : setMessageText(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && (paneIndex !== undefined ? sendMessage(paneIndex) : sendMessage())}
+                placeholder={`Message #${channel?.name}`}
+                className="flex-1 px-4 py-2 bg-[#1a1d21] border border-gray-600 rounded outline-none focus:border-[#1164a3] text-sm"
+              />
+              <button
+                onClick={() => paneIndex !== undefined ? sendMessage(paneIndex) : sendMessage()}
+                className="px-4 py-2 bg-[#1164a3] hover:bg-[#0e5a8a] rounded font-semibold text-sm"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="flex h-screen bg-[#1a1d21] text-white">
       {/* Sidebar */}
-      <div className="w-64 bg-[#3f0e40] flex flex-col">
+      <div className="w-64 bg-[#3f0e40] flex flex-col flex-shrink-0">
         <div className="p-4 border-b border-[#522653]">
           <h1 className="text-xl font-bold">Slack Clone</h1>
         </div>
@@ -255,11 +373,41 @@ export default function SlackClone() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <div className="h-14 border-b border-gray-700 flex items-center justify-between px-4">
-          <h2 className="text-lg font-semibold">
-            {activeChannel ? `# ${activeChannel.name}` : 'Select a channel'}
-          </h2>
+        {/* View Mode Toolbar */}
+        <div className="h-14 border-b border-gray-700 flex items-center justify-between px-4 flex-shrink-0">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-gray-400">View:</span>
+            <button
+              onClick={() => setViewMode('single')}
+              className={`px-3 py-1 rounded text-sm font-medium ${
+                viewMode === 'single'
+                  ? 'bg-[#1164a3] text-white'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              Single
+            </button>
+            <button
+              onClick={() => setViewMode('split2')}
+              className={`px-3 py-1 rounded text-sm font-medium ${
+                viewMode === 'split2'
+                  ? 'bg-[#1164a3] text-white'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              Split 2
+            </button>
+            <button
+              onClick={() => setViewMode('split4')}
+              className={`px-3 py-1 rounded text-sm font-medium ${
+                viewMode === 'split4'
+                  ? 'bg-[#1164a3] text-white'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              Split 4
+            </button>
+          </div>
           <div className="relative">
             <button
               onClick={() => setShowSettings(!showSettings)}
@@ -284,53 +432,46 @@ export default function SlackClone() {
           </div>
         </div>
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {channelMessages.length === 0 ? (
-            <div className="text-gray-400 text-center mt-8">
-              No messages yet. Start the conversation!
+        {/* Workspace Views */}
+        <div className="flex-1 overflow-hidden">
+          {viewMode === 'single' && (
+            <div className="h-full">
+              {renderChannelView(activeChannelId)}
             </div>
-          ) : (
-            channelMessages.map((message) => (
-              <div key={message.id} className="flex gap-3">
-                <div className="w-9 h-9 rounded bg-[#3f0e40] flex items-center justify-center font-semibold">
-                  {message.author[0]}
+          )}
+
+          {viewMode === 'split2' && (
+            <div className="h-full flex">
+              <div className="flex-1 border-r border-gray-700">
+                {renderChannelView(panes[0].channelId, 0)}
+              </div>
+              <div className="flex-1">
+                {renderChannelView(panes[1].channelId, 1)}
+              </div>
+            </div>
+          )}
+
+          {viewMode === 'split4' && (
+            <div className="h-full flex flex-col">
+              <div className="flex-1 flex border-b border-gray-700">
+                <div className="flex-1 border-r border-gray-700">
+                  {renderChannelView(panes[0].channelId, 0)}
                 </div>
-                <div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-semibold">{message.author}</span>
-                    <span className="text-xs text-gray-400">
-                      {new Date(message.timestamp).toLocaleTimeString()}
-                    </span>
-                  </div>
-                  <div className="text-sm mt-1">{message.text}</div>
+                <div className="flex-1">
+                  {renderChannelView(panes[1].channelId, 1)}
                 </div>
               </div>
-            ))
+              <div className="flex-1 flex">
+                <div className="flex-1 border-r border-gray-700">
+                  {renderChannelView(panes[2].channelId, 2)}
+                </div>
+                <div className="flex-1">
+                  {renderChannelView(panes[3].channelId, 3)}
+                </div>
+              </div>
+            </div>
           )}
         </div>
-
-        {/* Message Input */}
-        {activeChannelId && (
-          <div className="p-4 border-t border-gray-700">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={messageText}
-                onChange={(e) => setMessageText(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-                placeholder={`Message #${activeChannel?.name}`}
-                className="flex-1 px-4 py-2 bg-[#1a1d21] border border-gray-600 rounded outline-none focus:border-[#1164a3]"
-              />
-              <button
-                onClick={sendMessage}
-                className="px-6 py-2 bg-[#1164a3] hover:bg-[#0e5a8a] rounded font-semibold"
-              >
-                Send
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Profile Edit Modal */}
@@ -448,6 +589,10 @@ export default function SlackClone() {
     </div>
   );
 }
+
+
+
+
 
 
 
