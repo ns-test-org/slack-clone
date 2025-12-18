@@ -177,44 +177,44 @@ export default function SlackClone() {
   const channelMessages = messages.filter(m => m.channelId === activeChannelId);
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-purple-900 via-purple-700 to-purple-500 animate-gradient-xy text-white">
+    <div className="flex h-screen bg-[#1a1d21] text-white">
       {/* Left Navigation Column */}
-      <div className="w-16 bg-[#2d1230] flex flex-col items-center py-4 gap-4">
-        <button className="w-12 h-12 rounded-lg bg-[#3f0e40] hover:bg-[#522653] flex items-center justify-center text-xl">
+      <div className="w-16 bg-[#3f0e40] flex flex-col items-center py-4 gap-4">
+        <button className="w-10 h-10 rounded-lg bg-white hover:bg-gray-100 flex items-center justify-center text-xl shadow-sm transition-all">
           🏠
         </button>
-        <button className="w-12 h-12 rounded-lg hover:bg-[#3f0e40] flex items-center justify-center text-xl">
+        <button className="w-10 h-10 rounded-lg hover:bg-[#5a1f5c] flex items-center justify-center text-xl transition-all">
           💬
         </button>
-        <button className="w-12 h-12 rounded-lg hover:bg-[#3f0e40] flex items-center justify-center text-xl">
+        <button className="w-10 h-10 rounded-lg hover:bg-[#5a1f5c] flex items-center justify-center text-xl transition-all">
           🔔
         </button>
         <div className="relative">
           <button 
             onClick={() => setShowMoreMenu(!showMoreMenu)}
-            className="w-12 h-12 rounded-lg hover:bg-[#3f0e40] flex items-center justify-center text-xl"
+            className="w-10 h-10 rounded-lg hover:bg-[#5a1f5c] flex items-center justify-center text-xl transition-all"
           >
             ⋯
           </button>
           {showMoreMenu && (
-            <div className="absolute left-full ml-2 top-0 bg-[#1a1d21] border border-gray-700 rounded-lg shadow-lg py-2 w-48 z-50">
-              <button className="w-full text-left px-4 py-2 hover:bg-[#3f0e40] flex items-center gap-3">
+            <div className="absolute left-full ml-2 top-0 bg-[#1a1d21] border border-gray-700 rounded-lg shadow-xl py-2 w-48 z-50">
+              <button className="w-full text-left px-4 py-2 hover:bg-[#1164a3] flex items-center gap-3 transition-colors">
                 <span>📁</span> Files
               </button>
-              <button className="w-full text-left px-4 py-2 hover:bg-[#3f0e40] flex items-center gap-3">
+              <button className="w-full text-left px-4 py-2 hover:bg-[#1164a3] flex items-center gap-3 transition-colors">
                 <span>🕐</span> Later
               </button>
-              <button className="w-full text-left px-4 py-2 hover:bg-[#3f0e40] flex items-center gap-3">
+              <button className="w-full text-left px-4 py-2 hover:bg-[#1164a3] flex items-center gap-3 transition-colors">
                 <span>🔧</span> Tools
               </button>
             </div>
           )}
         </div>
 
-        <div className="border-t border-[#3f0e40] w-12 my-2"></div>
+        <div className="border-t border-[#5a1f5c] w-10 my-2"></div>
 
         <button 
-          className="w-12 h-12 rounded-lg hover:bg-[#3f0e40] flex items-center justify-center text-2xl"
+          className="w-10 h-10 rounded-lg hover:bg-[#5a1f5c] flex items-center justify-center text-2xl transition-all"
         >
           +
         </button>
@@ -227,7 +227,7 @@ export default function SlackClone() {
                 setProfileForm(userProfile);
                 setShowProfileEdit(true);
               }}
-              className="w-12 h-12 rounded-lg hover:bg-[#3f0e40] flex items-center justify-center overflow-hidden"
+              className="w-10 h-10 rounded-lg hover:bg-[#5a1f5c] flex items-center justify-center overflow-hidden transition-all"
             >
               {userProfile.photoUrl ? (
                 <img
@@ -236,7 +236,7 @@ export default function SlackClone() {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-[#1164a3] flex items-center justify-center font-semibold text-lg">
+                <div className="w-full h-full bg-[#1164a3] flex items-center justify-center font-semibold text-sm text-white">
                   {userProfile.displayName[0]?.toUpperCase()}
                 </div>
               )}
@@ -247,50 +247,50 @@ export default function SlackClone() {
 
       {/* Sidebar */}
       <div className="w-64 bg-[#3f0e40] flex flex-col">
-        <div className="p-4 border-b border-[#522653]">
-          <h1 className="text-xl font-bold">Slack Clone</h1>
+        <div className="p-4 border-b border-[#5a1f5c]">
+          <h1 className="text-lg font-bold text-white">Slack Clone</h1>
         </div>
 
 
 
         <div className="flex-1 overflow-y-auto">
           {/* Threads Section */}
-          <div className="p-4 border-b border-[#522653]">
-            <h2 className="text-sm font-semibold flex items-center gap-2 px-2 py-1 hover:bg-[#522653] rounded cursor-pointer">
+          <div className="p-3 border-b border-[#5a1f5c]">
+            <h2 className="text-sm font-medium flex items-center gap-2 px-2 py-1.5 hover:bg-[#5a1f5c] rounded cursor-pointer transition-colors text-white">
               <span>💬</span> Threads
             </h2>
           </div>
 
           {/* Huddles Section */}
-          <div className="p-4 border-b border-[#522653]">
-            <h2 className="text-sm font-semibold flex items-center gap-2 px-2 py-1 hover:bg-[#522653] rounded cursor-pointer">
+          <div className="p-3 border-b border-[#5a1f5c]">
+            <h2 className="text-sm font-medium flex items-center gap-2 px-2 py-1.5 hover:bg-[#5a1f5c] rounded cursor-pointer transition-colors text-white">
               <span>🎧</span> Huddles
             </h2>
           </div>
 
           {/* Drafts & Sent Section */}
-          <div className="p-4 border-b border-[#522653]">
-            <h2 className="text-sm font-semibold flex items-center gap-2 px-2 py-1 hover:bg-[#522653] rounded cursor-pointer">
+          <div className="p-3 border-b border-[#5a1f5c]">
+            <h2 className="text-sm font-medium flex items-center gap-2 px-2 py-1.5 hover:bg-[#5a1f5c] rounded cursor-pointer transition-colors text-white">
               <span>📝</span> Drafts & sent
             </h2>
           </div>
 
           {/* Directories Section */}
-          <div className="p-4 border-b border-[#522653]">
-            <h2 className="text-sm font-semibold flex items-center gap-2 px-2 py-1 hover:bg-[#522653] rounded cursor-pointer">
+          <div className="p-3 border-b border-[#5a1f5c]">
+            <h2 className="text-sm font-medium flex items-center gap-2 px-2 py-1.5 hover:bg-[#5a1f5c] rounded cursor-pointer transition-colors text-white">
               <span>📁</span> Directories
             </h2>
           </div>
 
           {/* VIP Section */}
-          <div className="p-4 border-b border-[#522653]">
+          <div className="p-3 border-b border-[#5a1f5c]">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-sm font-semibold flex items-center gap-1">
+              <h2 className="text-sm font-medium flex items-center gap-1 text-white">
                 <span className="text-yellow-400">⭐</span> VIP
               </h2>
               <button
                 onClick={() => setShowVipInput(!showVipInput)}
-                className="text-xl hover:bg-[#522653] rounded px-2"
+                className="text-lg hover:bg-[#5a1f5c] rounded px-2 transition-colors text-white"
               >
                 +
               </button>
@@ -304,13 +304,13 @@ export default function SlackClone() {
                   onChange={(e) => setNewVipName(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && addVipUser()}
                   placeholder="Name"
-                  className="w-full px-2 py-1 text-sm bg-[#522653] rounded border-none outline-none"
+                  className="w-full px-2 py-1 text-sm bg-[#1a1d21] border border-gray-600 rounded outline-none focus:border-[#1164a3] text-white transition-all"
                   autoFocus
                 />
                 <div className="flex gap-2 mt-2">
                   <button
                     onClick={addVipUser}
-                    className="px-3 py-1 text-xs bg-green-600 hover:bg-green-700 rounded"
+                    className="px-3 py-1 text-xs bg-[#1164a3] hover:bg-[#0e5a8a] text-white rounded transition-colors"
                   >
                     Add
                   </button>
@@ -319,7 +319,7 @@ export default function SlackClone() {
                       setShowVipInput(false);
                       setNewVipName('');
                     }}
-                    className="px-3 py-1 text-xs bg-gray-600 hover:bg-gray-700 rounded"
+                    className="px-3 py-1 text-xs bg-gray-600 hover:bg-gray-500 text-white rounded transition-colors"
                   >
                     Cancel
                   </button>
@@ -334,17 +334,17 @@ export default function SlackClone() {
                 vipUsers.map((user) => (
                   <div
                     key={user}
-                    className="flex items-center justify-between px-2 py-1 rounded hover:bg-[#522653] group"
+                    className="flex items-center justify-between px-2 py-1 rounded hover:bg-[#5a1f5c] group transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 rounded bg-yellow-500 flex items-center justify-center text-xs font-semibold text-black">
                         {user[0].toUpperCase()}
                       </div>
-                      <span className="text-sm">{user}</span>
+                      <span className="text-sm text-white">{user}</span>
                     </div>
                     <button
                       onClick={() => removeVipUser(user)}
-                      className="text-xs text-gray-400 hover:text-red-400 opacity-0 group-hover:opacity-100"
+                      className="text-xs text-gray-400 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
                     >
                       ✕
                     </button>
@@ -354,12 +354,12 @@ export default function SlackClone() {
             </div>
           </div>
 
-          <div className="p-4">
+          <div className="p-3">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-sm font-semibold">Channels</h2>
+              <h2 className="text-sm font-medium text-white">Channels</h2>
               <button
                 onClick={() => setShowChannelInput(!showChannelInput)}
-                className="text-xl hover:bg-[#522653] rounded px-2"
+                className="text-lg hover:bg-[#5a1f5c] rounded px-2 transition-colors text-white"
               >
                 +
               </button>
@@ -373,13 +373,13 @@ export default function SlackClone() {
                   onChange={(e) => setNewChannelName(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && createChannel()}
                   placeholder="channel-name"
-                  className="w-full px-2 py-1 text-sm bg-[#522653] rounded border-none outline-none"
+                  className="w-full px-2 py-1 text-sm bg-[#1a1d21] border border-gray-600 rounded outline-none focus:border-[#1164a3] text-white transition-all"
                   autoFocus
                 />
                 <div className="flex gap-2 mt-2">
                   <button
                     onClick={createChannel}
-                    className="px-3 py-1 text-xs bg-green-600 hover:bg-green-700 rounded"
+                    className="px-3 py-1 text-xs bg-[#1164a3] hover:bg-[#0e5a8a] text-white rounded transition-colors"
                   >
                     Create
                   </button>
@@ -388,7 +388,7 @@ export default function SlackClone() {
                       setShowChannelInput(false);
                       setNewChannelName('');
                     }}
-                    className="px-3 py-1 text-xs bg-gray-600 hover:bg-gray-700 rounded"
+                    className="px-3 py-1 text-xs bg-gray-600 hover:bg-gray-500 text-white rounded transition-colors"
                   >
                     Cancel
                   </button>
@@ -401,10 +401,10 @@ export default function SlackClone() {
                 <button
                   key={channel.id}
                   onClick={() => setActiveChannelId(channel.id)}
-                  className={`w-full text-left px-2 py-1 rounded text-sm ${
+                  className={`w-full text-left px-2 py-1.5 rounded text-sm transition-colors ${
                     activeChannelId === channel.id
-                      ? 'bg-[#1164a3] text-white'
-                      : 'hover:bg-[#522653]'
+                      ? 'bg-[#1164a3] text-white font-medium'
+                      : 'hover:bg-[#5a1f5c] text-gray-300'
                   }`}
                 >
                   # {channel.name}
@@ -418,40 +418,40 @@ export default function SlackClone() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <div className="h-14 border-b border-gray-700 flex items-center justify-between px-4">
-          <h2 className="text-lg font-semibold">
+        <div className="h-14 border-b border-gray-700 flex items-center justify-between px-5">
+          <h2 className="text-lg font-bold">
             {activeChannel ? `# ${activeChannel.name}` : 'Select a channel'}
           </h2>
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-5 space-y-4">
           {channelMessages.length === 0 ? (
             <div className="text-gray-400 text-center mt-8">
               No messages yet. Start the conversation!
             </div>
           ) : (
             channelMessages.map((message) => (
-              <div key={message.id} className="flex gap-3">
+              <div key={message.id} className="flex gap-3 hover:bg-[#1a1d21]/50 -mx-2 px-2 py-1 rounded transition-colors">
                 {userProfile?.photoUrl ? (
                   <img
                     src={userProfile.photoUrl}
                     alt={message.author}
-                    className="w-9 h-9 rounded object-cover"
+                    className="w-9 h-9 rounded object-cover flex-shrink-0"
                   />
                 ) : (
-                  <div className="w-9 h-9 rounded bg-[#1164a3] flex items-center justify-center font-semibold">
+                  <div className="w-9 h-9 rounded bg-[#1164a3] flex items-center justify-center font-semibold flex-shrink-0">
                     {message.author[0]}
                   </div>
                 )}
-                <div>
+                <div className="flex-1 min-w-0">
                   <div className="flex items-baseline gap-2">
-                    <span className="font-semibold">{message.author}</span>
+                    <span className="font-bold text-white">{message.author}</span>
                     <span className="text-xs text-gray-400">
                       {new Date(message.timestamp).toLocaleTimeString()}
                     </span>
                   </div>
-                  <div className="text-sm mt-1">{message.text}</div>
+                  <div className="text-sm mt-0.5 text-gray-200">{message.text}</div>
                 </div>
               </div>
             ))
@@ -460,19 +460,19 @@ export default function SlackClone() {
 
         {/* Message Input */}
         {activeChannelId && (
-          <div className="p-4 border-t border-gray-700">
-            <div className="flex gap-2">
+          <div className="p-5">
+            <div className="flex gap-3">
               <input
                 type="text"
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
                 placeholder={`Message #${activeChannel?.name}`}
-                className="flex-1 px-4 py-2 bg-[#1a1d21] border border-gray-600 rounded outline-none focus:border-[#1164a3]"
+                className="flex-1 px-4 py-2.5 bg-[#1a1d21] border border-gray-600 rounded-lg outline-none focus:border-[#1164a3] text-white placeholder-gray-400 transition-colors"
               />
               <button
                 onClick={sendMessage}
-                className="px-6 py-2 bg-[#1164a3] hover:bg-[#0e5a8a] rounded font-semibold"
+                className="px-6 py-2.5 bg-[#1164a3] hover:bg-[#0e5a8a] rounded-lg font-semibold transition-colors"
               >
                 Send
               </button>
@@ -485,14 +485,14 @@ export default function SlackClone() {
 
       {/* Profile Edit Modal */}
       {showProfileEdit && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white text-black rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+          <div className="bg-[#1a1d21] text-white rounded-lg p-6 w-full max-w-md border border-gray-700 shadow-2xl">
+            <h2 className="text-2xl font-bold mb-5">Edit Profile</h2>
             
             <div className="space-y-4">
               {/* Photo Upload */}
               <div>
-                <label className="block text-sm font-medium mb-2">Profile Photo</label>
+                <label className="block text-sm font-medium mb-2 text-gray-300">Profile Photo</label>
                 <div className="flex items-center gap-4">
                   {profileForm.photoUrl ? (
                     <img
@@ -501,11 +501,11 @@ export default function SlackClone() {
                       className="w-20 h-20 rounded object-cover"
                     />
                   ) : (
-                    <div className="w-20 h-20 rounded bg-gray-300 flex items-center justify-center text-2xl font-semibold">
+                    <div className="w-20 h-20 rounded bg-[#1164a3] flex items-center justify-center text-2xl font-semibold">
                       {profileForm.displayName?.[0]?.toUpperCase() || '?'}
                     </div>
                   )}
-                  <label className="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer hover:bg-blue-700">
+                  <label className="px-4 py-2 bg-[#1164a3] text-white rounded-lg cursor-pointer hover:bg-[#0e5a8a] transition-colors">
                     Upload Photo
                     <input
                       type="file"
@@ -519,47 +519,47 @@ export default function SlackClone() {
 
               {/* Full Name */}
               <div>
-                <label className="block text-sm font-medium mb-2">Full Name</label>
+                <label className="block text-sm font-medium mb-2 text-gray-300">Full Name</label>
                 <input
                   type="text"
                   value={profileForm.fullName}
                   onChange={(e) => setProfileForm({ ...profileForm, fullName: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-[#0d0f11] border border-gray-600 rounded-lg outline-none focus:border-[#1164a3] text-white transition-colors"
                   placeholder="John Doe"
                 />
               </div>
 
               {/* Display Name */}
               <div>
-                <label className="block text-sm font-medium mb-2">Display Name</label>
+                <label className="block text-sm font-medium mb-2 text-gray-300">Display Name</label>
                 <input
                   type="text"
                   value={profileForm.displayName}
                   onChange={(e) => setProfileForm({ ...profileForm, displayName: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-[#0d0f11] border border-gray-600 rounded-lg outline-none focus:border-[#1164a3] text-white transition-colors"
                   placeholder="johndoe"
                 />
               </div>
 
               {/* Title */}
               <div>
-                <label className="block text-sm font-medium mb-2">Title</label>
+                <label className="block text-sm font-medium mb-2 text-gray-300">Title</label>
                 <input
                   type="text"
                   value={profileForm.title}
                   onChange={(e) => setProfileForm({ ...profileForm, title: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-[#0d0f11] border border-gray-600 rounded-lg outline-none focus:border-[#1164a3] text-white transition-colors"
                   placeholder="Software Engineer"
                 />
               </div>
 
               {/* Timezone */}
               <div>
-                <label className="block text-sm font-medium mb-2">Timezone</label>
+                <label className="block text-sm font-medium mb-2 text-gray-300">Timezone</label>
                 <select
                   value={profileForm.timezone}
                   onChange={(e) => setProfileForm({ ...profileForm, timezone: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-[#0d0f11] border border-gray-600 rounded-lg outline-none focus:border-[#1164a3] text-white transition-colors"
                 >
                   <option value="">Select timezone</option>
                   <option value="America/New_York">Eastern Time (ET)</option>
@@ -580,13 +580,13 @@ export default function SlackClone() {
               <div className="flex gap-3 pt-4">
                 <button
                   onClick={saveProfile}
-                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-semibold"
+                  className="flex-1 px-4 py-2.5 bg-[#007a5a] text-white rounded-lg hover:bg-[#006644] font-semibold transition-colors"
                 >
                   Save Profile
                 </button>
                 <button
                   onClick={() => setShowProfileEdit(false)}
-                  className="flex-1 px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 font-semibold"
+                  className="flex-1 px-4 py-2.5 bg-gray-600 text-white rounded-lg hover:bg-gray-500 font-semibold transition-colors"
                 >
                   Cancel
                 </button>
@@ -598,6 +598,22 @@ export default function SlackClone() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
