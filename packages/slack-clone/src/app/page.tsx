@@ -433,9 +433,17 @@ export default function SlackClone() {
           ) : (
             channelMessages.map((message) => (
               <div key={message.id} className="flex gap-3">
-                <div className="w-9 h-9 rounded bg-[#3f0e40] flex items-center justify-center font-semibold">
-                  {message.author[0]}
-                </div>
+                {userProfile?.photoUrl ? (
+                  <img
+                    src={userProfile.photoUrl}
+                    alt={message.author}
+                    className="w-9 h-9 rounded object-cover"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded bg-[#1164a3] flex items-center justify-center font-semibold">
+                    {message.author[0]}
+                  </div>
+                )}
                 <div>
                   <div className="flex items-baseline gap-2">
                     <span className="font-semibold">{message.author}</span>
@@ -590,6 +598,7 @@ export default function SlackClone() {
     </div>
   );
 }
+
 
 
 
