@@ -22,12 +22,16 @@ export default function SlackClone() {
   const [newChannelName, setNewChannelName] = useState('');
   const [messageText, setMessageText] = useState('');
   const [showChannelInput, setShowChannelInput] = useState(false);
+  const [vipUsers, setVipUsers] = useState<string[]>([]);
+  const [newVipName, setNewVipName] = useState('');
+  const [showVipInput, setShowVipInput] = useState(false);
 
   // Load from localStorage on mount
   useEffect(() => {
     const savedChannels = localStorage.getItem('slack-channels');
     const savedMessages = localStorage.getItem('slack-messages');
     const savedActiveChannel = localStorage.getItem('slack-active-channel');
+    const savedVipUsers = localStorage.getItem('slack-vip-users');
 
     if (savedChannels) {
       const parsedChannels = JSON.parse(savedChannels);
@@ -50,6 +54,10 @@ export default function SlackClone() {
     if (savedMessages) {
       setMessages(JSON.parse(savedMessages));
     }
+
+    if (savedVipUsers) {
+      setVipUsers(JSON.parse(savedVipUsers));
+    }
   }, []);
 
   // Save to localStorage whenever channels or messages change
@@ -68,6 +76,10 @@ export default function SlackClone() {
       localStorage.setItem('slack-active-channel', activeChannelId);
     }
   }, [activeChannelId]);
+
+  useEffect(() => {
+    localStorage.setItem('slack-vip-users', JSON.stringify(vipUsers));
+  }, [vipUsers]);
 
   const createChannel = () => {
     if (!newChannelName.trim()) return;
@@ -98,6 +110,19 @@ export default function SlackClone() {
     setMessageText('');
   };
 
+  const addVipUser = () => {
+    if (!newVipName.trim()) return;
+    if (vipUsers.includes(newVipName.trim())) return;
+
+    setVipUsers([...vipUsers, newVipName.trim()]);
+    setNewVipName('');
+    setShowVipInput(false);
+  };
+
+  const removeVipUser = (userName: string) => {
+    setVipUsers(vipUsers.filter(u => u !== userName));
+  };
+
   const activeChannel = channels.find(c => c.id === activeChannelId);
   const channelMessages = messages.filter(m => m.channelId === activeChannelId);
 
@@ -110,6 +135,78 @@ export default function SlackClone() {
         </div>
 
         <div className="flex-1 overflow-y-auto">
+          {/* VIP Section */}
+          <div className="p-4 border-b border-[#522653]">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-sm font-semibold flex items-center gap-1">
+                <span className="text-yellow-400">⭐</span> VIP
+              </h2>
+              <button
+                onClick={() => setShowVipInput(!showVipInput)}
+                className="text-xl hover:bg-[#522653] rounded px-2"
+              >
+                +
+              </button>
+            </div>
+
+            {showVipInput && (
+              <div className="mb-3">
+                <input
+                  type="text"
+                  value={newVipName}
+                  onChange={(e) => setNewVipName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && addVipUser()}
+                  placeholder="Name"
+                  className="w-full px-2 py-1 text-sm bg-[#522653] rounded border-none outline-none"
+                  autoFocus
+                />
+                <div className="flex gap-2 mt-2">
+                  <button
+                    onClick={addVipUser}
+                    className="px-3 py-1 text-xs bg-green-600 hover:bg-green-700 rounded"
+                  >
+                    Add
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowVipInput(false);
+                      setNewVipName('');
+                    }}
+                    className="px-3 py-1 text-xs bg-gray-600 hover:bg-gray-700 rounded"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-1">
+              {vipUsers.length === 0 ? (
+                <p className="text-xs text-gray-400 italic">No VIPs yet</p>
+              ) : (
+                vipUsers.map((user) => (
+                  <div
+                    key={user}
+                    className="flex items-center justify-between px-2 py-1 rounded hover:bg-[#522653] group"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded bg-yellow-500 flex items-center justify-center text-xs font-semibold text-black">
+                        {user[0].toUpperCase()}
+                      </div>
+                      <span className="text-sm">{user}</span>
+                    </div>
+                    <button
+                      onClick={() => removeVipUser(user)}
+                      className="text-xs text-gray-400 hover:text-red-400 opacity-0 group-hover:opacity-100"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
           <div className="p-4">
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-sm font-semibold">Channels</h2>
@@ -231,4 +328,9 @@ export default function SlackClone() {
     </div>
   );
 }
+
+
+
+
+
 
