@@ -15,6 +15,14 @@ interface Message {
   author: string;
 }
 
+interface UserProfile {
+  fullName: string;
+  displayName: string;
+  title: string;
+  timezone: string;
+  photoUrl?: string;
+}
+
 export default function SlackClone() {
   const [channels, setChannels] = useState<Channel[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -22,12 +30,30 @@ export default function SlackClone() {
   const [newChannelName, setNewChannelName] = useState('');
   const [messageText, setMessageText] = useState('');
   const [showChannelInput, setShowChannelInput] = useState(false);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showProfileEdit, setShowProfileEdit] = useState(false);
+  const [profileForm, setProfileForm] = useState<UserProfile>({
+    fullName: '',
+    displayName: '',
+    title: '',
+    timezone: '',
+    photoUrl: '',
+  });
 
   // Load from localStorage on mount
   useEffect(() => {
     const savedChannels = localStorage.getItem('slack-channels');
     const savedMessages = localStorage.getItem('slack-messages');
     const savedActiveChannel = localStorage.getItem('slack-active-channel');
+    const savedProfile = localStorage.getItem('slack-user-profile');
+
+    if (savedProfile) {
+      setUserProfile(JSON.parse(savedProfile));
+    } else {
+      // Show profile setup if no profile exists
+      setShowProfileEdit(true);
+    }
 
     if (savedChannels) {
       const parsedChannels = JSON.parse(savedChannels);
@@ -91,11 +117,44 @@ export default function SlackClone() {
       channelId: activeChannelId,
       text: messageText.trim(),
       timestamp: Date.now(),
-      author: 'You',
+      author: userProfile?.displayName || 'You',
     };
 
     setMessages([...messages, newMessage]);
     setMessageText('');
+  };
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfileForm({ ...profileForm, photoUrl: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const saveProfile = () => {
+    const profile = {
+      fullName: profileForm.fullName,
+      displayName: profileForm.displayName,
+      title: profileForm.title,
+      timezone: profileForm.timezone,
+      photoUrl: profileForm.photoUrl,
+    };
+    setUserProfile(profile);
+    localStorage.setItem('slack-user-profile', JSON.stringify(profile));
+    setShowProfileEdit(false);
+    setShowSettings(false);
+  };
+
+  const openEditProfile = () => {
+    if (userProfile) {
+      setProfileForm(userProfile);
+    }
+    setShowProfileEdit(true);
+    setShowSettings(false);
   };
 
   const activeChannel = channels.find(c => c.id === activeChannelId);
@@ -108,6 +167,29 @@ export default function SlackClone() {
         <div className="p-4 border-b border-[#522653]">
           <h1 className="text-xl font-bold">Slack Clone</h1>
         </div>
+
+        {/* User Profile Section */}
+        {userProfile && (
+          <div className="p-4 border-b border-[#522653]">
+            <div className="flex items-center gap-3">
+              {userProfile.photoUrl ? (
+                <img
+                  src={userProfile.photoUrl}
+                  alt={userProfile.displayName}
+                  className="w-10 h-10 rounded object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded bg-[#1164a3] flex items-center justify-center font-semibold">
+                  {userProfile.displayName[0]?.toUpperCase()}
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-sm truncate">{userProfile.displayName}</div>
+                <div className="text-xs text-gray-300 truncate">{userProfile.title}</div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="flex-1 overflow-y-auto">
           <div className="p-4">
@@ -174,10 +256,32 @@ export default function SlackClone() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <div className="h-14 border-b border-gray-700 flex items-center px-4">
+        <div className="h-14 border-b border-gray-700 flex items-center justify-between px-4">
           <h2 className="text-lg font-semibold">
             {activeChannel ? `# ${activeChannel.name}` : 'Select a channel'}
           </h2>
+          <div className="relative">
+            <button
+              onClick={() => setShowSettings(!showSettings)}
+              className="p-2 hover:bg-gray-700 rounded"
+              title="Settings"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
+            {showSettings && (
+              <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded shadow-lg z-10">
+                <button
+                  onClick={openEditProfile}
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                >
+                  Edit Profile
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Messages */}
@@ -228,7 +332,128 @@ export default function SlackClone() {
           </div>
         )}
       </div>
+
+      {/* Profile Edit Modal */}
+      {showProfileEdit && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white text-black rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>
+            
+            <div className="space-y-4">
+              {/* Photo Upload */}
+              <div>
+                <label className="block text-sm font-medium mb-2">Profile Photo</label>
+                <div className="flex items-center gap-4">
+                  {profileForm.photoUrl ? (
+                    <img
+                      src={profileForm.photoUrl}
+                      alt="Profile"
+                      className="w-20 h-20 rounded object-cover"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 rounded bg-gray-300 flex items-center justify-center text-2xl font-semibold">
+                      {profileForm.displayName?.[0]?.toUpperCase() || '?'}
+                    </div>
+                  )}
+                  <label className="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer hover:bg-blue-700">
+                    Upload Photo
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              </div>
+
+              {/* Full Name */}
+              <div>
+                <label className="block text-sm font-medium mb-2">Full Name</label>
+                <input
+                  type="text"
+                  value={profileForm.fullName}
+                  onChange={(e) => setProfileForm({ ...profileForm, fullName: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-blue-500"
+                  placeholder="John Doe"
+                />
+              </div>
+
+              {/* Display Name */}
+              <div>
+                <label className="block text-sm font-medium mb-2">Display Name</label>
+                <input
+                  type="text"
+                  value={profileForm.displayName}
+                  onChange={(e) => setProfileForm({ ...profileForm, displayName: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-blue-500"
+                  placeholder="johndoe"
+                />
+              </div>
+
+              {/* Title */}
+              <div>
+                <label className="block text-sm font-medium mb-2">Title</label>
+                <input
+                  type="text"
+                  value={profileForm.title}
+                  onChange={(e) => setProfileForm({ ...profileForm, title: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-blue-500"
+                  placeholder="Software Engineer"
+                />
+              </div>
+
+              {/* Timezone */}
+              <div>
+                <label className="block text-sm font-medium mb-2">Timezone</label>
+                <select
+                  value={profileForm.timezone}
+                  onChange={(e) => setProfileForm({ ...profileForm, timezone: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-blue-500"
+                >
+                  <option value="">Select timezone</option>
+                  <option value="America/New_York">Eastern Time (ET)</option>
+                  <option value="America/Chicago">Central Time (CT)</option>
+                  <option value="America/Denver">Mountain Time (MT)</option>
+                  <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                  <option value="America/Anchorage">Alaska Time (AKT)</option>
+                  <option value="Pacific/Honolulu">Hawaii Time (HT)</option>
+                  <option value="Europe/London">London (GMT)</option>
+                  <option value="Europe/Paris">Paris (CET)</option>
+                  <option value="Asia/Tokyo">Tokyo (JST)</option>
+                  <option value="Asia/Shanghai">Shanghai (CST)</option>
+                  <option value="Australia/Sydney">Sydney (AEDT)</option>
+                </select>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={saveProfile}
+                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-semibold"
+                >
+                  Save Profile
+                </button>
+                <button
+                  onClick={() => setShowProfileEdit(false)}
+                  className="flex-1 px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 font-semibold"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
+
+
+
+
+
+
+
 
