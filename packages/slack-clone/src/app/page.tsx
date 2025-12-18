@@ -34,9 +34,7 @@ export default function SlackClone() {
   const [newVipName, setNewVipName] = useState('');
   const [showVipInput, setShowVipInput] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
-  const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [showSettings, setShowSettings] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [profileForm, setProfileForm] = useState<UserProfile>({
     fullName: '',
@@ -173,15 +171,6 @@ export default function SlackClone() {
     setUserProfile(profile);
     localStorage.setItem('slack-user-profile', JSON.stringify(profile));
     setShowProfileEdit(false);
-    setShowSettings(false);
-  };
-
-  const openEditProfile = () => {
-    if (userProfile) {
-      setProfileForm(userProfile);
-    }
-    setShowProfileEdit(true);
-    setShowSettings(false);
   };
 
   const activeChannel = channels.find(c => c.id === activeChannelId);
@@ -225,14 +214,34 @@ export default function SlackClone() {
         <div className="border-t border-[#3f0e40] w-12 my-2"></div>
 
         <button 
-          onClick={() => setShowNewMessageModal(true)}
           className="w-12 h-12 rounded-lg hover:bg-[#3f0e40] flex items-center justify-center text-2xl"
         >
           +
         </button>
 
-        <div className="w-12 h-12 rounded-lg bg-black flex items-center justify-center text-3xl">
-          🟡
+        {/* Profile Icon at Bottom */}
+        <div className="mt-auto">
+          {userProfile && (
+            <button
+              onClick={() => {
+                setProfileForm(userProfile);
+                setShowProfileEdit(true);
+              }}
+              className="w-12 h-12 rounded-lg hover:bg-[#3f0e40] flex items-center justify-center overflow-hidden"
+            >
+              {userProfile.photoUrl ? (
+                <img
+                  src={userProfile.photoUrl}
+                  alt={userProfile.displayName}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-[#1164a3] flex items-center justify-center font-semibold text-lg">
+                  {userProfile.displayName[0]?.toUpperCase()}
+                </div>
+              )}
+            </button>
+          )}
         </div>
       </div>
 
@@ -464,58 +473,7 @@ export default function SlackClone() {
         )}
       </div>
 
-      {/* Profile Icon - Fixed Bottom Right */}
-      {userProfile && (
-        <div className="fixed bottom-6 right-6 z-40">
-          <div className="relative">
-            <button
-              onClick={() => setShowSettings(!showSettings)}
-              className="group"
-            >
-              {userProfile.photoUrl ? (
-                <img
-                  src={userProfile.photoUrl}
-                  alt={userProfile.displayName}
-                  className="w-12 h-12 rounded-lg object-cover border-2 border-gray-600 hover:border-[#1164a3] transition-colors shadow-lg"
-                />
-              ) : (
-                <div className="w-12 h-12 rounded-lg bg-[#1164a3] flex items-center justify-center font-semibold text-lg border-2 border-gray-600 hover:border-[#0e5a8a] transition-colors shadow-lg">
-                  {userProfile.displayName[0]?.toUpperCase()}
-                </div>
-              )}
-            </button>
-            {showSettings && (
-              <div className="absolute bottom-full right-0 mb-2 w-64 bg-white text-black rounded-lg shadow-xl border border-gray-200 overflow-hidden">
-                <div className="p-4 bg-gray-50 border-b border-gray-200">
-                  <div className="flex items-center gap-3">
-                    {userProfile.photoUrl ? (
-                      <img
-                        src={userProfile.photoUrl}
-                        alt={userProfile.displayName}
-                        className="w-12 h-12 rounded object-cover"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 rounded bg-[#1164a3] flex items-center justify-center font-semibold text-white">
-                        {userProfile.displayName[0]?.toUpperCase()}
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="font-semibold truncate">{userProfile.displayName}</div>
-                      <div className="text-sm text-gray-600 truncate">{userProfile.title}</div>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={openEditProfile}
-                  className="w-full text-left px-4 py-3 hover:bg-gray-100 font-medium"
-                >
-                  Edit Profile
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+
 
       {/* Profile Edit Modal */}
       {showProfileEdit && (
@@ -632,6 +590,12 @@ export default function SlackClone() {
     </div>
   );
 }
+
+
+
+
+
+
 
 
 
