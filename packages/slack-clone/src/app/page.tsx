@@ -26,6 +26,7 @@ export default function SlackClone() {
   const [newVipName, setNewVipName] = useState('');
   const [showVipInput, setShowVipInput] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [showNewMessageModal, setShowNewMessageModal] = useState(false);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -160,6 +161,19 @@ export default function SlackClone() {
               </button>
             </div>
           )}
+        </div>
+
+        <div className="border-t border-[#3f0e40] w-12 my-2"></div>
+
+        <button 
+          onClick={() => setShowNewMessageModal(true)}
+          className="w-12 h-12 rounded-lg hover:bg-[#3f0e40] flex items-center justify-center text-2xl"
+        >
+          +
+        </button>
+
+        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xl font-bold">
+          U
         </div>
       </div>
 
@@ -391,6 +405,8 @@ export default function SlackClone() {
     </div>
   );
 }
+
+
 
 
 
