@@ -25,6 +25,7 @@ export default function SlackClone() {
   const [vipUsers, setVipUsers] = useState<string[]>([]);
   const [newVipName, setNewVipName] = useState('');
   const [showVipInput, setShowVipInput] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -128,6 +129,40 @@ export default function SlackClone() {
 
   return (
     <div className="flex h-screen bg-[#1a1d21] text-white">
+      {/* Left Navigation Column */}
+      <div className="w-16 bg-[#2d1230] flex flex-col items-center py-4 gap-4">
+        <button className="w-12 h-12 rounded-lg bg-[#3f0e40] hover:bg-[#522653] flex items-center justify-center text-xl">
+          🏠
+        </button>
+        <button className="w-12 h-12 rounded-lg hover:bg-[#3f0e40] flex items-center justify-center text-xl">
+          💬
+        </button>
+        <button className="w-12 h-12 rounded-lg hover:bg-[#3f0e40] flex items-center justify-center text-xl">
+          🔔
+        </button>
+        <div className="relative">
+          <button 
+            onClick={() => setShowMoreMenu(!showMoreMenu)}
+            className="w-12 h-12 rounded-lg hover:bg-[#3f0e40] flex items-center justify-center text-xl"
+          >
+            ⋯
+          </button>
+          {showMoreMenu && (
+            <div className="absolute left-full ml-2 top-0 bg-[#1a1d21] border border-gray-700 rounded-lg shadow-lg py-2 w-48 z-50">
+              <button className="w-full text-left px-4 py-2 hover:bg-[#3f0e40] flex items-center gap-3">
+                <span>📁</span> Files
+              </button>
+              <button className="w-full text-left px-4 py-2 hover:bg-[#3f0e40] flex items-center gap-3">
+                <span>🕐</span> Later
+              </button>
+              <button className="w-full text-left px-4 py-2 hover:bg-[#3f0e40] flex items-center gap-3">
+                <span>🔧</span> Tools
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Sidebar */}
       <div className="w-64 bg-[#3f0e40] flex flex-col">
         <div className="p-4 border-b border-[#522653]">
@@ -356,6 +391,8 @@ export default function SlackClone() {
     </div>
   );
 }
+
+
 
 
 
