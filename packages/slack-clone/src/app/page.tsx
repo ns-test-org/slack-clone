@@ -172,8 +172,8 @@ export default function SlackClone() {
           +
         </button>
 
-        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xl font-bold">
-          U
+        <div className="w-12 h-12 rounded-lg bg-black flex items-center justify-center text-3xl">
+          🟡
         </div>
       </div>
 
@@ -405,6 +405,7 @@ export default function SlackClone() {
     </div>
   );
 }
+
 
 
 
