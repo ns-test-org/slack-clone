@@ -50,6 +50,9 @@ export default function SlackClone() {
 
     if (savedProfile) {
       setUserProfile(JSON.parse(savedProfile));
+    } else {
+      // Show profile setup if no profile exists
+      setShowProfileEdit(true);
     }
 
     if (savedChannels) {
@@ -445,6 +448,7 @@ export default function SlackClone() {
     </div>
   );
 }
+
 
 
 
