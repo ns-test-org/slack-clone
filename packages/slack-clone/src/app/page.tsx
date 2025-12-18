@@ -1,84 +1,234 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const slogans = [
-  "Turn chats into apps",
-  "Prompt. Ship. Repeat.",
-  "Build anything from a chat",
-  "Ideas → Apps, instantly",
-  "From zero to MVP in minutes",
-  "Your cofounder in the command line",
-  "Draft, iterate, deploy",
-  "Ship faster than you can type",
-  "Design in text, deliver in code",
-  "Dream it. Prompt it. Run it.",
-  "Chat-native app building",
-  "From prompt to product",
-  "One prompt, infinite apps",
-  "Stop scaffolding. Start shipping.",
-  "Prototype at the speed of thought",
-  "Make conversations executable"
-];
+interface Channel {
+  id: string;
+  name: string;
+}
 
-export default function Landing() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
+interface Message {
+  id: string;
+  channelId: string;
+  text: string;
+  timestamp: number;
+  author: string;
+}
 
+export default function SlackClone() {
+  const [channels, setChannels] = useState<Channel[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [activeChannelId, setActiveChannelId] = useState<string | null>(null);
+  const [newChannelName, setNewChannelName] = useState('');
+  const [messageText, setMessageText] = useState('');
+  const [showChannelInput, setShowChannelInput] = useState(false);
+
+  // Load from localStorage on mount
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIsVisible(false);
-      setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % slogans.length);
-        setIsVisible(true);
-      }, 400);
-    }, 2800);
+    const savedChannels = localStorage.getItem('slack-channels');
+    const savedMessages = localStorage.getItem('slack-messages');
+    const savedActiveChannel = localStorage.getItem('slack-active-channel');
 
-    return () => clearInterval(interval);
+    if (savedChannels) {
+      const parsedChannels = JSON.parse(savedChannels);
+      setChannels(parsedChannels);
+      
+      if (savedActiveChannel) {
+        setActiveChannelId(savedActiveChannel);
+      } else if (parsedChannels.length > 0) {
+        setActiveChannelId(parsedChannels[0].id);
+      }
+    } else {
+      // Create default channel
+      const defaultChannel = { id: '1', name: 'general' };
+      setChannels([defaultChannel]);
+      setActiveChannelId(defaultChannel.id);
+      localStorage.setItem('slack-channels', JSON.stringify([defaultChannel]));
+      localStorage.setItem('slack-active-channel', defaultChannel.id);
+    }
+
+    if (savedMessages) {
+      setMessages(JSON.parse(savedMessages));
+    }
   }, []);
 
+  // Save to localStorage whenever channels or messages change
+  useEffect(() => {
+    if (channels.length > 0) {
+      localStorage.setItem('slack-channels', JSON.stringify(channels));
+    }
+  }, [channels]);
+
+  useEffect(() => {
+    localStorage.setItem('slack-messages', JSON.stringify(messages));
+  }, [messages]);
+
+  useEffect(() => {
+    if (activeChannelId) {
+      localStorage.setItem('slack-active-channel', activeChannelId);
+    }
+  }, [activeChannelId]);
+
+  const createChannel = () => {
+    if (!newChannelName.trim()) return;
+
+    const newChannel: Channel = {
+      id: Date.now().toString(),
+      name: newChannelName.trim().toLowerCase().replace(/\s+/g, '-'),
+    };
+
+    setChannels([...channels, newChannel]);
+    setActiveChannelId(newChannel.id);
+    setNewChannelName('');
+    setShowChannelInput(false);
+  };
+
+  const sendMessage = () => {
+    if (!messageText.trim() || !activeChannelId) return;
+
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      channelId: activeChannelId,
+      text: messageText.trim(),
+      timestamp: Date.now(),
+      author: 'You',
+    };
+
+    setMessages([...messages, newMessage]);
+    setMessageText('');
+  };
+
+  const activeChannel = channels.find(c => c.id === activeChannelId);
+  const channelMessages = messages.filter(m => m.channelId === activeChannelId);
+
   return (
-    <div className="relative h-[100dvh] w-full overflow-hidden bg-black text-white">
-      {/* Enhanced animated aurora background layers */}
-      <div className="absolute inset-0 bg-aurora-layer-1" />
-      <div className="absolute inset-0 bg-aurora-layer-2" />
-      <div className="absolute inset-0 bg-aurora-layer-3" />
-      
-      {/* Floating particles overlay */}
-      <div className="absolute inset-0 bg-particles" />
-      
-      {/* Main content - centered */}
-      <main className="relative z-10 h-full flex flex-col items-center justify-center px-6">
-        <h1 className="text-center text-[clamp(28px,6vw,64px)] font-medium tracking-tight mb-4">
-          Turn Chats into Apps
-        </h1>
-        
-        {/* Rotating slogans */}
-        <div className="mt-4 h-8 md:h-10 overflow-hidden flex items-center justify-center">
-          <span
-            className={`inline-block text-center text-[clamp(18px,3vw,32px)] font-light transition-all duration-[400ms] ease-in-out ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
-            }`}
-          >
-            {slogans[currentIndex]}
-          </span>
+    <div className="flex h-screen bg-[#1a1d21] text-white">
+      {/* Sidebar */}
+      <div className="w-64 bg-[#3f0e40] flex flex-col">
+        <div className="p-4 border-b border-[#522653]">
+          <h1 className="text-xl font-bold">Slack Clone</h1>
         </div>
-      </main>
-      
-      {/* Start Prompting arrow pointing left - bottom left */}
-      <div className="absolute left-6 md:left-8 bottom-[5%] z-20 flex items-center gap-3 arrow-point-left">
-        <div className="flex items-center gap-2 text-white/80 font-medium text-sm md:text-base">
-          <svg 
-            className="w-5 h-5 md:w-6 md:h-6 animate-bounce-horizontal" 
-            fill="none" 
-            viewBox="0 0 24 24" 
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          <span>Start prompting</span>
+
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-sm font-semibold">Channels</h2>
+              <button
+                onClick={() => setShowChannelInput(!showChannelInput)}
+                className="text-xl hover:bg-[#522653] rounded px-2"
+              >
+                +
+              </button>
+            </div>
+
+            {showChannelInput && (
+              <div className="mb-3">
+                <input
+                  type="text"
+                  value={newChannelName}
+                  onChange={(e) => setNewChannelName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && createChannel()}
+                  placeholder="channel-name"
+                  className="w-full px-2 py-1 text-sm bg-[#522653] rounded border-none outline-none"
+                  autoFocus
+                />
+                <div className="flex gap-2 mt-2">
+                  <button
+                    onClick={createChannel}
+                    className="px-3 py-1 text-xs bg-green-600 hover:bg-green-700 rounded"
+                  >
+                    Create
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowChannelInput(false);
+                      setNewChannelName('');
+                    }}
+                    className="px-3 py-1 text-xs bg-gray-600 hover:bg-gray-700 rounded"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-1">
+              {channels.map((channel) => (
+                <button
+                  key={channel.id}
+                  onClick={() => setActiveChannelId(channel.id)}
+                  className={`w-full text-left px-2 py-1 rounded text-sm ${
+                    activeChannelId === channel.id
+                      ? 'bg-[#1164a3] text-white'
+                      : 'hover:bg-[#522653]'
+                  }`}
+                >
+                  # {channel.name}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <div className="h-14 border-b border-gray-700 flex items-center px-4">
+          <h2 className="text-lg font-semibold">
+            {activeChannel ? `# ${activeChannel.name}` : 'Select a channel'}
+          </h2>
+        </div>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {channelMessages.length === 0 ? (
+            <div className="text-gray-400 text-center mt-8">
+              No messages yet. Start the conversation!
+            </div>
+          ) : (
+            channelMessages.map((message) => (
+              <div key={message.id} className="flex gap-3">
+                <div className="w-9 h-9 rounded bg-[#3f0e40] flex items-center justify-center font-semibold">
+                  {message.author[0]}
+                </div>
+                <div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-semibold">{message.author}</span>
+                    <span className="text-xs text-gray-400">
+                      {new Date(message.timestamp).toLocaleTimeString()}
+                    </span>
+                  </div>
+                  <div className="text-sm mt-1">{message.text}</div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Message Input */}
+        {activeChannelId && (
+          <div className="p-4 border-t border-gray-700">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={messageText}
+                onChange={(e) => setMessageText(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+                placeholder={`Message #${activeChannel?.name}`}
+                className="flex-1 px-4 py-2 bg-[#1a1d21] border border-gray-600 rounded outline-none focus:border-[#1164a3]"
+              />
+              <button
+                onClick={sendMessage}
+                className="px-6 py-2 bg-[#1164a3] hover:bg-[#0e5a8a] rounded font-semibold"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
