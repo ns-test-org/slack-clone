@@ -177,7 +177,7 @@ export default function SlackClone() {
   const channelMessages = messages.filter(m => m.channelId === activeChannelId);
 
   return (
-    <div className="flex h-screen bg-[#1a1d21] text-white">
+    <div className="flex h-screen bg-gradient-to-br from-purple-900 via-purple-700 to-purple-500 animate-gradient-xy text-white">
       {/* Left Navigation Column */}
       <div className="w-16 bg-[#2d1230] flex flex-col items-center py-4 gap-4">
         <button className="w-12 h-12 rounded-lg bg-[#3f0e40] hover:bg-[#522653] flex items-center justify-center text-xl">
@@ -598,6 +598,7 @@ export default function SlackClone() {
     </div>
   );
 }
+
 
 
 
