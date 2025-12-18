@@ -30,6 +30,11 @@ export default function SlackClone() {
   const [newChannelName, setNewChannelName] = useState('');
   const [messageText, setMessageText] = useState('');
   const [showChannelInput, setShowChannelInput] = useState(false);
+  const [vipUsers, setVipUsers] = useState<string[]>([]);
+  const [newVipName, setNewVipName] = useState('');
+  const [showVipInput, setShowVipInput] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
@@ -46,6 +51,7 @@ export default function SlackClone() {
     const savedChannels = localStorage.getItem('slack-channels');
     const savedMessages = localStorage.getItem('slack-messages');
     const savedActiveChannel = localStorage.getItem('slack-active-channel');
+    const savedVipUsers = localStorage.getItem('slack-vip-users');
     const savedProfile = localStorage.getItem('slack-user-profile');
 
     if (savedProfile) {
@@ -76,6 +82,10 @@ export default function SlackClone() {
     if (savedMessages) {
       setMessages(JSON.parse(savedMessages));
     }
+
+    if (savedVipUsers) {
+      setVipUsers(JSON.parse(savedVipUsers));
+    }
   }, []);
 
   // Save to localStorage whenever channels or messages change
@@ -94,6 +104,10 @@ export default function SlackClone() {
       localStorage.setItem('slack-active-channel', activeChannelId);
     }
   }, [activeChannelId]);
+
+  useEffect(() => {
+    localStorage.setItem('slack-vip-users', JSON.stringify(vipUsers));
+  }, [vipUsers]);
 
   const createChannel = () => {
     if (!newChannelName.trim()) return;
@@ -124,6 +138,17 @@ export default function SlackClone() {
     setMessageText('');
   };
 
+  const addVipUser = () => {
+    if (!newVipName.trim()) return;
+    if (vipUsers.includes(newVipName.trim())) return;
+
+    setVipUsers([...vipUsers, newVipName.trim()]);
+    setNewVipName('');
+    setShowVipInput(false);
+  };
+
+  const removeVipUser = (userName: string) => {
+    setVipUsers(vipUsers.filter(u => u !== userName));
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -162,6 +187,53 @@ export default function SlackClone() {
 
   return (
     <div className="flex h-screen bg-[#1a1d21] text-white">
+      {/* Left Navigation Column */}
+      <div className="w-16 bg-[#2d1230] flex flex-col items-center py-4 gap-4">
+        <button className="w-12 h-12 rounded-lg bg-[#3f0e40] hover:bg-[#522653] flex items-center justify-center text-xl">
+          🏠
+        </button>
+        <button className="w-12 h-12 rounded-lg hover:bg-[#3f0e40] flex items-center justify-center text-xl">
+          💬
+        </button>
+        <button className="w-12 h-12 rounded-lg hover:bg-[#3f0e40] flex items-center justify-center text-xl">
+          🔔
+        </button>
+        <div className="relative">
+          <button 
+            onClick={() => setShowMoreMenu(!showMoreMenu)}
+            className="w-12 h-12 rounded-lg hover:bg-[#3f0e40] flex items-center justify-center text-xl"
+          >
+            ⋯
+          </button>
+          {showMoreMenu && (
+            <div className="absolute left-full ml-2 top-0 bg-[#1a1d21] border border-gray-700 rounded-lg shadow-lg py-2 w-48 z-50">
+              <button className="w-full text-left px-4 py-2 hover:bg-[#3f0e40] flex items-center gap-3">
+                <span>📁</span> Files
+              </button>
+              <button className="w-full text-left px-4 py-2 hover:bg-[#3f0e40] flex items-center gap-3">
+                <span>🕐</span> Later
+              </button>
+              <button className="w-full text-left px-4 py-2 hover:bg-[#3f0e40] flex items-center gap-3">
+                <span>🔧</span> Tools
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className="border-t border-[#3f0e40] w-12 my-2"></div>
+
+        <button 
+          onClick={() => setShowNewMessageModal(true)}
+          className="w-12 h-12 rounded-lg hover:bg-[#3f0e40] flex items-center justify-center text-2xl"
+        >
+          +
+        </button>
+
+        <div className="w-12 h-12 rounded-lg bg-black flex items-center justify-center text-3xl">
+          🟡
+        </div>
+      </div>
+
       {/* Sidebar */}
       <div className="w-64 bg-[#3f0e40] flex flex-col">
         <div className="p-4 border-b border-[#522653]">
@@ -192,6 +264,106 @@ export default function SlackClone() {
         )}
 
         <div className="flex-1 overflow-y-auto">
+          {/* Threads Section */}
+          <div className="p-4 border-b border-[#522653]">
+            <h2 className="text-sm font-semibold flex items-center gap-2 px-2 py-1 hover:bg-[#522653] rounded cursor-pointer">
+              <span>💬</span> Threads
+            </h2>
+          </div>
+
+          {/* Huddles Section */}
+          <div className="p-4 border-b border-[#522653]">
+            <h2 className="text-sm font-semibold flex items-center gap-2 px-2 py-1 hover:bg-[#522653] rounded cursor-pointer">
+              <span>🎧</span> Huddles
+            </h2>
+          </div>
+
+          {/* Drafts & Sent Section */}
+          <div className="p-4 border-b border-[#522653]">
+            <h2 className="text-sm font-semibold flex items-center gap-2 px-2 py-1 hover:bg-[#522653] rounded cursor-pointer">
+              <span>📝</span> Drafts & sent
+            </h2>
+          </div>
+
+          {/* Directories Section */}
+          <div className="p-4 border-b border-[#522653]">
+            <h2 className="text-sm font-semibold flex items-center gap-2 px-2 py-1 hover:bg-[#522653] rounded cursor-pointer">
+              <span>📁</span> Directories
+            </h2>
+          </div>
+
+          {/* VIP Section */}
+          <div className="p-4 border-b border-[#522653]">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-sm font-semibold flex items-center gap-1">
+                <span className="text-yellow-400">⭐</span> VIP
+              </h2>
+              <button
+                onClick={() => setShowVipInput(!showVipInput)}
+                className="text-xl hover:bg-[#522653] rounded px-2"
+              >
+                +
+              </button>
+            </div>
+
+            {showVipInput && (
+              <div className="mb-3">
+                <input
+                  type="text"
+                  value={newVipName}
+                  onChange={(e) => setNewVipName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && addVipUser()}
+                  placeholder="Name"
+                  className="w-full px-2 py-1 text-sm bg-[#522653] rounded border-none outline-none"
+                  autoFocus
+                />
+                <div className="flex gap-2 mt-2">
+                  <button
+                    onClick={addVipUser}
+                    className="px-3 py-1 text-xs bg-green-600 hover:bg-green-700 rounded"
+                  >
+                    Add
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowVipInput(false);
+                      setNewVipName('');
+                    }}
+                    className="px-3 py-1 text-xs bg-gray-600 hover:bg-gray-700 rounded"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-1">
+              {vipUsers.length === 0 ? (
+                <p className="text-xs text-gray-400 italic">No VIPs yet</p>
+              ) : (
+                vipUsers.map((user) => (
+                  <div
+                    key={user}
+                    className="flex items-center justify-between px-2 py-1 rounded hover:bg-[#522653] group"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded bg-yellow-500 flex items-center justify-center text-xs font-semibold text-black">
+                        {user[0].toUpperCase()}
+                      </div>
+                      <span className="text-sm">{user}</span>
+                    </div>
+                    <button
+                      onClick={() => removeVipUser(user)}
+                      className="text-xs text-gray-400 hover:text-red-400 opacity-0 group-hover:opacity-100"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
           <div className="p-4">
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-sm font-semibold">Channels</h2>
@@ -448,6 +620,9 @@ export default function SlackClone() {
     </div>
   );
 }
+
+
+
 
 
 
