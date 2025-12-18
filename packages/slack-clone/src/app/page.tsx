@@ -168,29 +168,6 @@ export default function SlackClone() {
           <h1 className="text-xl font-bold">Slack Clone</h1>
         </div>
 
-        {/* User Profile Section */}
-        {userProfile && (
-          <div className="p-4 border-b border-[#522653]">
-            <div className="flex items-center gap-3">
-              {userProfile.photoUrl ? (
-                <img
-                  src={userProfile.photoUrl}
-                  alt={userProfile.displayName}
-                  className="w-10 h-10 rounded object-cover"
-                />
-              ) : (
-                <div className="w-10 h-10 rounded bg-[#1164a3] flex items-center justify-center font-semibold">
-                  {userProfile.displayName[0]?.toUpperCase()}
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <div className="font-semibold text-sm truncate">{userProfile.displayName}</div>
-                <div className="text-xs text-gray-300 truncate">{userProfile.title}</div>
-              </div>
-            </div>
-          </div>
-        )}
-
         <div className="flex-1 overflow-y-auto">
           <div className="p-4">
             <div className="flex items-center justify-between mb-2">
@@ -260,28 +237,6 @@ export default function SlackClone() {
           <h2 className="text-lg font-semibold">
             {activeChannel ? `# ${activeChannel.name}` : 'Select a channel'}
           </h2>
-          <div className="relative">
-            <button
-              onClick={() => setShowSettings(!showSettings)}
-              className="p-2 hover:bg-gray-700 rounded"
-              title="Settings"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </button>
-            {showSettings && (
-              <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded shadow-lg z-10">
-                <button
-                  onClick={openEditProfile}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                >
-                  Edit Profile
-                </button>
-              </div>
-            )}
-          </div>
         </div>
 
         {/* Messages */}
@@ -332,6 +287,44 @@ export default function SlackClone() {
           </div>
         )}
       </div>
+
+      {/* Profile Button - Bottom Right */}
+      {userProfile && (
+        <div className="fixed bottom-4 right-4 z-40">
+          <div className="relative">
+            <button
+              onClick={() => setShowSettings(!showSettings)}
+              className="flex items-center gap-3 bg-white text-black rounded-lg shadow-lg hover:shadow-xl transition-shadow p-3"
+            >
+              {userProfile.photoUrl ? (
+                <img
+                  src={userProfile.photoUrl}
+                  alt={userProfile.displayName}
+                  className="w-10 h-10 rounded object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded bg-[#1164a3] text-white flex items-center justify-center font-semibold">
+                  {userProfile.displayName[0]?.toUpperCase()}
+                </div>
+              )}
+              <div className="text-left">
+                <div className="font-semibold text-sm">{userProfile.displayName}</div>
+                <div className="text-xs text-gray-600">{userProfile.title}</div>
+              </div>
+            </button>
+            {showSettings && (
+              <div className="absolute bottom-full right-0 mb-2 w-48 bg-white text-black rounded shadow-lg">
+                <button
+                  onClick={openEditProfile}
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 rounded"
+                >
+                  Edit Profile
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Profile Edit Modal */}
       {showProfileEdit && (
@@ -448,6 +441,9 @@ export default function SlackClone() {
     </div>
   );
 }
+
+
+
 
 
 
