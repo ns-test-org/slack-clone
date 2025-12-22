@@ -505,7 +505,7 @@ export default function SlackClone() {
                       {profileForm.displayName?.[0]?.toUpperCase() || '?'}
                     </div>
                   )}
-                  <label className="px-4 py-2 bg-[#1164a3] text-white rounded-lg cursor-pointer hover:bg-[#0e5a8a] transition-colors">
+                  <label className="px-4 py-2 bg-orange-500 text-white rounded-lg cursor-pointer hover:bg-orange-600 transition-colors">
                     Upload Photo
                     <input
                       type="file"
@@ -598,6 +598,7 @@ export default function SlackClone() {
     </div>
   );
 }
+
 
 
 
